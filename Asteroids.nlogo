@@ -32,7 +32,7 @@ to setup
   clear-all
   set-default-shape meteor "circle"  
   set-default-shape ships "default"        ;;set the shape of the ships to a square  
-  create-ships 12                          ;; create x ships at the start 
+  create-ships 4                          ;; create x ships at the start 
   [
    ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
    ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
@@ -52,10 +52,10 @@ to setup
   ]
   
   set-default-shape rock "circle"   ;; set the shape of the rocks to a circle
-  create-rock 5                     ;; create x rocks at the start of the game 
+  create-rock 1                     ;; create x rocks at the start of the game 
   [                               
     set color white                 ;; the coloyur of the rocks to white   
-    set size 2.5                      ;; set the size of the rocks to 3 
+    set size 10                      ;; set the size of the rocks to 3 
     setxy random-xcor random-ycor   ;; the spawn point of the rocks will be a random location of the screen 
   ]
   
@@ -278,30 +278,34 @@ to c-collision-script
   ;;if prey != nobody  
   ask rock
   [
-    if abs [pcolor] of patch-here = white
-  [     
-    ask rock
-    [
-      hatch-meteor 1
+    if abs [pcolor] of patch-here = white 
+    [ 
+      ask rock 
+     [
+      hatch-meteor 5
     [    
       set color green
       set size 2.5  ;; easier to see
-      setxy random (25) (25)
-      set heading random (360)
+     setxy random (25) (25)
+     set heading random (360)
       set label-color blue - 2
     ] 
   die
-  ask bullet [die] 
+ ask bullet [die] 
         ]
- ]
+    ]
   ]
+  
   ask meteor
   [ 
     if abs [pcolor] of patch-here = white [die]
-  ]
- ;; if any? rock-here                           ;; did we get one?  if so,
-   ;; [ ask rock [ die ]                          ;; kill it
-     ;;  ] ;; get energy from eating
+ ]
+
+  ;;if any? rock-here                           ;; did we get one?  if so,
+    ;;[ ask rock [ die ]                          ;; kill it
+      ;;] ;; get energy from eating
+     ;;]
+   
 end
 
 to c-draw-boundaries ;; draw the boundary that confines the objects to screen
@@ -372,14 +376,14 @@ end
 to a-move-ships
   ask ships[ if abs [pcolor] of patch-here = green
   [ set heading (- heading) ]  
-  fd 0.5                          ;; move the ships forward                             
+  fd 0.01                          ;; move the ships forward                             
 ] 
 end
 
 to a-move-rocks
   ask rock 
   [
-    forward 0.7                     
+    forward 0.01                     
   ]
 end
 
@@ -904,7 +908,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.2-RC3
+NetLogo 5.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
