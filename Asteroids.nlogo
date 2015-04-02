@@ -260,9 +260,11 @@ to go
                  
  c-collision-script  
  a-collision-script     
-   
- ask players[ if abs [pcolor] of patch-here = yellow 
- [ set heading (- heading) ]]
+  c-avoid 
+; ask players[ if abs [pcolor] of patch-here = yellow 
+; [ set heading (- heading) ]]
+ ;ask rock[ if abs [pcolor] of patch-ahead 1 = green [ set heading (- heading)]]
+; ask ships[ if abs [pcolor] of patch-ahead 1 = blue [set heading (- heading)]]
  ask patches with [abs pycor = max-pycor]
  [ set pcolor green]
  
@@ -306,6 +308,13 @@ to c-collision-script
  ;; if any? rock-here                           ;; did we get one?  if so,
    ;; [ ask rock [ die ]                          ;; kill it
      ;;  ] ;; get energy from eating
+end
+
+to c-avoid
+  ask players[ if abs [pcolor] of patch-here = yellow 
+ [ set heading (- heading) ]]
+ ask rock[ if abs [pcolor] of patch-ahead 1 = green [ set heading (- heading)]]
+ ask ships[ if abs [pcolor] of patch-ahead 1 = blue [set heading (- heading)]] 
 end
 
 to c-draw-boundaries ;; draw the boundary that confines the objects to screen
