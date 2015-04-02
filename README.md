@@ -1,0 +1,2 @@
+# GamesAI
+AI Coursework
