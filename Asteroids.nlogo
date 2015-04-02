@@ -437,25 +437,28 @@ to r-erase
 end
 
 to r-spawn-invader
-  if mouse-down?
+  every(1)
   [
-    hatch-ships 1                          ;; create x ships at the start 
+    if mouse-down?
     [
-      if tool = "Invader"
+      hatch-ships 1                          ;; create x ships at the start 
       [
-        ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
-        ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
-        ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
-        
-        ask one-of turtles [ set shape "Invader_1"]
-        ask one-of turtles [ set shape "Invader_2"]  
-        ask one-of turtles [ set shape "Invader_3"] 
-        
-        set size 3                             ;; set the size of the ships
-        setxy (round mouse-xcor) (round mouse-ycor)           ;; set the location of the ship spawn point, at the top of the screen
+        if tool = "Invader"
+        [
+          ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
+          ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
+          ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
+          
+          ask one-of turtles [ set shape "Invader_1"]
+          ask one-of turtles [ set shape "Invader_2"]  
+          ask one-of turtles [ set shape "Invader_3"] 
+          
+          set size 3                             ;; set the size of the ships
+          setxy (round mouse-xcor) (round mouse-ycor)           ;; set the location of the ship spawn point, at the top of the screen
+        ]
       ]
     ]
-  ]
+]
 end
 
 
