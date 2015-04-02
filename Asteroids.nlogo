@@ -252,7 +252,7 @@ to go
  ;; ] 
    ask bullet
    [ 
-     ask patches in-cone 1 360 
+     ask patches in-cone 1.5 360 
      [ set pcolor white ] 
   ]               
  c-collision-script  
@@ -352,6 +352,11 @@ ask players
    ]
 ]
 end
+to move-up
+  ask players[ set heading 0 
+    fd 1]
+  
+end
 ;;;; connors end ;;;;;
 
 ;;;; andrews start ;;;;
@@ -407,10 +412,10 @@ ticks
 100.0
 
 BUTTON
--1
-10
-63
-43
+29
+243
+93
+276
 NIL
 Setup
 NIL
@@ -424,10 +429,10 @@ NIL
 1
 
 BUTTON
-155
-12
-218
-45
+185
+245
+248
+278
 Go
 go\ns-find-target\n
 T
@@ -441,10 +446,10 @@ NIL
 0
 
 MONITOR
-66
-11
-149
-56
+96
+244
+179
+289
 NIL
 count turtles
 3
@@ -452,10 +457,10 @@ count turtles
 11
 
 BUTTON
-125
-65
-191
-98
+155
+298
+221
+331
 Bullet
 c-sprog-spawns
 NIL
@@ -469,15 +474,66 @@ NIL
 1
 
 SWITCH
-6
-64
-109
-97
+36
+297
+139
+330
 energy?
 energy?
 0
 1
 -1000
+
+BUTTON
+135
+395
+214
+428
+move up
+move-up
+NIL
+1
+T
+OBSERVER
+NIL
+W
+NIL
+NIL
+1
+
+BUTTON
+134
+429
+229
+462
+move down
+move-down
+NIL
+1
+T
+OBSERVER
+NIL
+S
+NIL
+NIL
+1
+
+BUTTON
+78
+435
+161
+468
+move left
+move-left
+NIL
+1
+T
+OBSERVER
+NIL
+A
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -822,7 +878,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.1.0
+NetLogo 5.2-RC3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
