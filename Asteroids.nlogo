@@ -1,18 +1,19 @@
-breed [ bullet bullets ]
-bullet-own [ energy ]
-breed [ shells shell ]
-breed [ ships ship ]
-breed [ rock rocks ]
-breed [ rock2 rocks2 ]
 breed [ players player ]
-breed [meteor meteors]
+breed [ bullets bullet ]
+breed [ ships ship ]
+breed [ rocks rock ]
+breed [ meteors meteor ]
+breed [ rocks2 rock2 ]
+
 players-own [ energy ]
 ships-own [ path current-path ]
+bullets-own [ energy ]
 
 globals
-[ open 
+[ 
+  open 
   closed 
- ;; optimal-path 
+  tool 
 ]
 
 patches-own
@@ -30,38 +31,97 @@ patches-own
 
 to setup
   clear-all
-  set-default-shape meteor "circle"  
-  set-default-shape ships "default"        ;;set the shape of the ships to a square  
-  create-ships 12                          ;; create x ships at the start 
-  [
-   ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
-   ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
-   ask one-of turtles [ set color yellow ] ;; set the colour of the ships to yellow
-   ask one-of turtles [ set color red ]    ;; set the colour of the ships to red              
-   set size 2                              ;; set the size of the ships
-   setxy random-xcor random-ycor           ;; set the location of the ship spawn point, at the top of the screen
-  ]
+  ask patches [set pcolor black]
+  
+  set-default-shape meteors "asteroid"  
+
+ ; set-default-shape ships "Invader_2"
+ ; create-ships 12                          ;; create x ships at the start 
+ ; [
+ ;  ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
+ ;  ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
+ ;  ask one-of turtles [ set color yellow ] ;; set the colour of the ships to yellow
+ ;  ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
    
-  set-default-shape players "default" ;;set the shape of the ships to a square  
+ ;  ask one-of turtles [ set shape "Invader_1"]
+ ;  ask one-of turtles [ set shape "Invader_2"]  
+ ;  ask one-of turtles [ set shape "Invader_3"] 
+            
+ ;  set size 3                             ;; set the size of the ships
+ ;  setxy random-xcor random-ycor           ;; set the location of the ship spawn point, at the top of the screen
+ ; ]
+   
+  set-default-shape players "tank" ;;set the shape of the ships to a square  
   create-players 1                    ;; create 5 ship at the start 
   [
-   set color brown                    ;; set the colour pof the player to brown
-   set size 2                         ;; set the size of the player
+   set color green                   ;; set the colour pof the player to brown
+   set size 4                        ;; set the size of the player
    set energy (10 * 2)                         
    set heading 90 setxy 5 -27         ;; set the location of the player spawn point, at the top of the screen
   ]
   
-  set-default-shape rock "circle"   ;; set the shape of the rocks to a circle
-  create-rock 5                     ;; create x rocks at the start of the game 
-  [                               
-    set color white                 ;; the coloyur of the rocks to white   
-    set size 2.5                      ;; set the size of the rocks to 3 
-    setxy random-xcor random-ycor   ;; the spawn point of the rocks will be a random location of the screen 
-  ]
+ ; set-default-shape rocks "asteroid"   ;; set the shape of the rocks to a circle
+ ; create-rocks 5                     ;; create x rocks at the start of the game 
+ ; [                               
+ ;   set color brown                 ;; the coloyur of the rocks to white   
+ ;   set size 4                      ;; set the size of the rocks to 3 
+ ;   setxy random-xcor random-ycor   ;; the spawn point of the rocks will be a random location of the screen 
+ ; ]
   
-  s-create-hunter-and-target        ;; Name of method that creates the "hunter" object that targets the player
+          ;; Name of method that creates the "hunter" object that targets the player
   reset-ticks
   
+end
+
+to go
+  if ticks >= 1000 [stop] ;; stops the game game when the number of ticks reaches 1000
+  c-move-players          ;; the method name for the move player function 
+  c-color-refresh         ;; the method name for checking the boundry colours
+  a-move-ships            ;; the method name for moving the ships
+  a-move-rocks            ;; the method for moving the rocks
+       ask turtles[c-reflect]
+  
+  ;;ask players
+  ;;[ 
+  ;;  ask patches in-cone 3 240 
+  ;;  [ set pcolor red ]  
+  ;;] 
+        
+ ;; ask ships
+ ;; [ ask patches in-cone 2 360 
+ ;;     [ set pcolor green ]     
+ ;; ]
+      
+  ;;ask rock
+ ;; [ 
+  ;;  ask patches in-cone 3.5 360 
+ ;;   [ set pcolor white ]
+ ;; ] 
+   ask bullets
+   [ 
+     ask patches in-cone 1 360 
+     [ 
+       set pcolor white 
+     ] 
+  ]               
+ c-collision-script  
+ a-collision-script     
+   
+ ask players[ if abs [pcolor] of patch-here = yellow 
+ [ set heading (- heading) ]]
+ ask patches with [abs pycor = max-pycor]
+ [ set pcolor green]
+ 
+ c-display-energy
+ ask bullets
+ [ 
+    set energy energy - 1
+    if energy < 0[die]
+ ]
+ 
+ s-create-hunter-and-target
+ 
+  tick
 end
 
 ;;;; stephen begin ;;;;;
@@ -71,7 +131,6 @@ to s-create-hunter-and-target
   ask one-of ships with [color = red]
   [ 
     set label "hunter"
-    set color red  
   ]
 end
 
@@ -226,63 +285,16 @@ end
 ;;;; stephen end ;;;;;
 
 ;;;; connors start ;;;
-to go
-  if ticks >= 1000 [stop] ;; stops the game game when the number of ticks reaches 1000
-  c-move-players          ;; the method name for the move player function 
-  c-color-refresh         ;; the method name for checking the boundry colours
-  a-move-ships            ;; the method name for moving the ships
-  a-move-rocks            ;; the method for moving the rocks
-       ask turtles[c-reflect]
-  
-  ;;ask players
-  ;;[ 
-  ;;  ask patches in-cone 3 240 
-  ;;  [ set pcolor red ]  
-  ;;] 
-        
- ;; ask ships
- ;; [ ask patches in-cone 2 360 
- ;;     [ set pcolor green ]     
- ;; ]
-      
-  ;;ask rock
- ;; [ 
-  ;;  ask patches in-cone 3.5 360 
- ;;   [ set pcolor white ]
- ;; ] 
-   ask bullet
-   [ 
-     ask patches in-cone 1 360 
-     [ set pcolor white ] 
-  ]               
- c-collision-script  
- a-collision-script     
-   
- ask players[ if abs [pcolor] of patch-here = yellow 
- [ set heading (- heading) ]]
- ask patches with [abs pycor = max-pycor]
- [ set pcolor green]
- 
- c-display-energy
- ask bullet
- [ 
-    set energy energy - 1
-    if energy < 0[die]
- ]
-  tick
-end
-
-
 to c-collision-script
   ;;let prey one-of rocks-here                    ;; grab a random rock
   ;;if prey != nobody  
-  ask rock
+  ask rocks
   [
     if abs [pcolor] of patch-here = white
   [     
-    ask rock
+    ask rocks
     [
-      hatch-meteor 1
+      hatch-meteors 1
     [    
       set color green
       set size 2.5  ;; easier to see
@@ -291,11 +303,11 @@ to c-collision-script
       set label-color blue - 2
     ] 
   die
-  ask bullet [die] 
+  ask bullets [die] 
         ]
  ]
   ]
-  ask meteor
+  ask meteors
   [ 
     if abs [pcolor] of patch-here = white [die]
   ]
@@ -336,16 +348,17 @@ end
 
 to c-display-energy  ;;to display the energy labels on the specified turtles
   if energy?[ ask players  [set label round energy]  ;;will place the specified energy rating on pentagon
-              ask bullet [set label round energy] ;;vwil place the specifief energy rating on the bullets hatched from the pentagon
+              ask bullets [set label round energy] ;;vwil place the specifief energy rating on the bullets hatched from the pentagon
              ]
 end
 
 to c-sprog-spawns ;; spawns bullet 
 ask players
 [
-  hatch-bullet 1
+  hatch-bullets 1
    [
      set color pink
+     set shape "bullet"
      set size 1
      set energy (50) 
      lt 90 fd 1
@@ -363,14 +376,27 @@ to a-move-ships
 end
 
 to a-move-rocks
-  ask rock 
+  ask rocks 
   [
     forward 0.7                     
   ]
 end
 
 to a-collision-script
-  ask ships [if abs [pcolor] of patch-here = white [die]]
+  ask ships 
+  [
+    if abs [pcolor] of patch-here = white 
+    [
+      die
+      ask patch-here
+      [
+        ask bullets-here
+        [
+          die
+        ]
+      ]
+    ]
+  ]
 end
     
 to a-bounce 
@@ -378,6 +404,77 @@ to a-bounce
   [ set heading (- heading) ]
 end
 ;;;; andrews end ;;;;
+
+;;;; Ross Start ;;;;
+to r-draw  
+  if tool = "Invader"
+  [ r-spawn-invader ]
+  
+  if tool = "Asteroid"
+  [ r-spawn-asteroid ]
+  
+  if tool = "Erase"
+  [ r-erase ]
+end
+
+to r-erase
+    ask patch (round mouse-xcor) (round mouse-ycor)
+    [
+      if mouse-down?
+      [
+        set pcolor black
+        
+        ask ships-here
+        [ die ]
+        
+        ask rocks-here
+        [ die ]
+        
+        ask players-here
+        [ setxy 0 -27 ]
+      ]
+    ]
+end
+
+to r-spawn-invader
+  if mouse-down?
+  [
+    hatch-ships 1                          ;; create x ships at the start 
+    [
+      if tool = "Invader"
+      [
+        ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
+        ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
+        ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
+        
+        ask one-of turtles [ set shape "Invader_1"]
+        ask one-of turtles [ set shape "Invader_2"]  
+        ask one-of turtles [ set shape "Invader_3"] 
+        
+        set size 3                             ;; set the size of the ships
+        setxy (round mouse-xcor) (round mouse-ycor)           ;; set the location of the ship spawn point, at the top of the screen
+      ]
+    ]
+  ]
+end
+
+
+to r-spawn-asteroid
+  if mouse-down?
+  [
+    hatch-rocks 1
+    [
+      if tool = "Asteroid"
+      [
+        set color brown 
+        set shape "asteroid"
+        setxy (round mouse-xcor) (round mouse-ycor)
+      ]
+    ]
+  ]
+end
+
+;;;; Ross End   ;;;;
 @#$#@#$#@
 GRAPHICS-WINDOW
 285
@@ -407,10 +504,10 @@ ticks
 100.0
 
 BUTTON
--1
-10
-63
-43
+510
+665
+574
+698
 NIL
 Setup
 NIL
@@ -424,10 +521,10 @@ NIL
 1
 
 BUTTON
-155
-12
-218
-45
+660
+665
+723
+698
 Go
 go\ns-find-target\n
 T
@@ -441,10 +538,10 @@ NIL
 0
 
 MONITOR
-66
-11
-149
-56
+641
+711
+724
+756
 NIL
 count turtles
 3
@@ -452,10 +549,10 @@ count turtles
 11
 
 BUTTON
-125
-65
-191
-98
+584
+665
+650
+698
 Bullet
 c-sprog-spawns
 NIL
@@ -463,21 +560,100 @@ NIL
 T
 OBSERVER
 NIL
-0
+F
 NIL
 NIL
 1
 
 SWITCH
-6
-64
-109
-97
+510
+722
+613
+755
 energy?
 energy?
 0
 1
 -1000
+
+BUTTON
+155
+144
+272
+177
+Invader
+set tool \"Invader 1\"
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+17
+98
+84
+131
+Eraser
+set tool \"Erase\"
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+17
+144
+123
+177
+Place Objects
+r-draw
+T
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+194
+98
+272
+131
+Asteroid
+set tool \"Asteroid\"
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+18
+12
+104
+61
+Tool In Use
+tool
+0
+1
+12
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -531,6 +707,19 @@ true
 0
 Polygon -7500403 true true 150 0 0 150 105 150 105 293 195 293 195 150 300 150
 
+asteroid
+true
+3
+Circle -6459832 true true 102 56 127
+Rectangle -6459832 true true 120 195 135 195
+Circle -6459832 true true 114 174 42
+Circle -6459832 true true 59 110 67
+Circle -6459832 true true 85 88 134
+Circle -6459832 true true 85 64 67
+Circle -6459832 true true 156 122 74
+Circle -6459832 true true 77 153 55
+Rectangle -6459832 true true 188 116 229 153
+
 box
 false
 0
@@ -549,6 +738,16 @@ Circle -7500403 true true 110 127 80
 Circle -7500403 true true 110 75 80
 Line -7500403 true 150 100 80 30
 Line -7500403 true 150 100 220 30
+
+bullet
+true
+0
+Rectangle -7500403 true true 150 60 165 120
+Rectangle -7500403 true true 135 120 150 135
+Rectangle -7500403 true true 120 135 135 150
+Rectangle -7500403 true true 135 150 150 165
+Rectangle -7500403 true true 150 165 165 180
+Rectangle -7500403 true true 135 180 150 240
 
 butterfly
 true
@@ -666,6 +865,65 @@ Rectangle -16777216 true false 120 210 180 285
 Polygon -7500403 true true 15 120 150 15 285 120
 Line -16777216 false 30 120 270 120
 
+invader_1
+true
+0
+Rectangle -7500403 true true 60 105 90 120
+Rectangle -7500403 true true 210 105 240 120
+Rectangle -7500403 true true 180 120 210 135
+Rectangle -7500403 true true 135 120 165 135
+Rectangle -7500403 true true 105 135 135 150
+Rectangle -7500403 true true 90 120 120 135
+Rectangle -7500403 true true 165 135 195 150
+Rectangle -7500403 true true 75 150 225 165
+Rectangle -7500403 true true 195 165 225 180
+Rectangle -7500403 true true 135 165 165 180
+Rectangle -7500403 true true 75 165 105 180
+Rectangle -7500403 true true 75 180 225 195
+Rectangle -7500403 true true 90 195 210 210
+Rectangle -7500403 true true 120 210 180 225
+
+invader_2
+true
+0
+Rectangle -7500403 true true 90 150 210 180
+Rectangle -7500403 true true 90 135 105 150
+Rectangle -7500403 true true 195 135 210 150
+Rectangle -7500403 true true 105 120 135 135
+Rectangle -7500403 true true 165 120 195 135
+Rectangle -7500403 true true 75 165 90 195
+Rectangle -7500403 true true 210 165 225 195
+Rectangle -7500403 true true 60 135 75 180
+Rectangle -7500403 true true 225 135 240 180
+Rectangle -7500403 true true 90 165 105 210
+Rectangle -7500403 true true 195 165 210 210
+Rectangle -7500403 true true 105 195 195 210
+Rectangle -7500403 true true 120 180 180 195
+Rectangle -7500403 true true 105 210 120 225
+Rectangle -7500403 true true 90 225 105 240
+Rectangle -7500403 true true 180 210 195 225
+Rectangle -7500403 true true 195 225 210 240
+
+invader_3
+true
+0
+Rectangle -7500403 true true 135 120 165 135
+Rectangle -7500403 true true 120 135 135 150
+Rectangle -7500403 true true 165 135 180 150
+Rectangle -7500403 true true 90 150 210 165
+Rectangle -7500403 true true 135 165 165 180
+Rectangle -7500403 true true 105 180 195 195
+Rectangle -7500403 true true 120 195 180 210
+Rectangle -7500403 true true 135 210 165 225
+Rectangle -7500403 true true 90 165 120 180
+Rectangle -7500403 true true 180 165 210 180
+Rectangle -7500403 true true 105 120 120 135
+Rectangle -7500403 true true 180 120 195 135
+Rectangle -7500403 true true 120 105 135 120
+Rectangle -7500403 true true 165 105 180 120
+Rectangle -7500403 true true 90 105 105 120
+Rectangle -7500403 true true 195 105 210 120
+
 leaf
 false
 0
@@ -724,6 +982,23 @@ Polygon -1 true true 195 285 210 285 210 240 240 210 195 210
 Polygon -7500403 true false 276 85 285 105 302 99 294 83
 Polygon -7500403 true false 219 85 210 105 193 99 201 83
 
+shield
+true
+0
+Rectangle -13840069 true false 45 135 75 255
+Rectangle -13840069 true false 225 135 255 255
+Rectangle -13840069 true false 75 105 90 210
+Rectangle -13840069 true false 210 105 225 210
+Rectangle -13840069 true false 90 105 105 195
+Rectangle -13840069 true false 195 105 210 195
+Rectangle -13840069 true false 105 105 120 180
+Rectangle -13840069 true false 180 105 195 180
+Rectangle -13840069 true false 120 105 135 165
+Rectangle -13840069 true false 165 105 180 165
+Rectangle -13840069 true false 90 90 210 105
+Rectangle -13840069 true false 135 105 165 150
+Rectangle -13840069 true false 60 120 240 135
+
 square
 false
 0
@@ -739,6 +1014,13 @@ star
 false
 0
 Polygon -7500403 true true 151 1 185 108 298 108 207 175 242 282 151 216 59 282 94 175 3 108 116 108
+
+tank
+true
+0
+Rectangle -13840069 true false 120 75 165 225
+Rectangle -13840069 true false 105 90 120 210
+Rectangle -13840069 true false 75 135 105 165
 
 target
 false
