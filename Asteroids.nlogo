@@ -34,10 +34,11 @@ to setup
   set-default-shape ships "default"        ;;set the shape of the ships to a square  
   create-ships 4                          ;; create x ships at the start 
   [
-   ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
-   ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
-   ask one-of turtles [ set color yellow ] ;; set the colour of the ships to yellow
-   ask one-of turtles [ set color red ]    ;; set the colour of the ships to red              
+   set color red
+   ;ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
+   ;ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
+   ;ask one-of turtles [ set color yellow ] ;; set the colour of the ships to yellow
+   ;ask one-of turtles [ set color red ]    ;; set the colour of the ships to red              
    set size 2                              ;; set the size of the ships
    setxy random-xcor random-ycor           ;; set the location of the ship spawn point, at the top of the screen
   ]
@@ -52,10 +53,10 @@ to setup
   ]
   
   set-default-shape rock "circle"   ;; set the shape of the rocks to a circle
-  create-rock 1                     ;; create x rocks at the start of the game 
+  create-rock 4                     ;; create x rocks at the start of the game 
   [                               
     set color white                 ;; the coloyur of the rocks to white   
-    set size 10                      ;; set the size of the rocks to 3 
+    set size 4                      ;; set the size of the rocks to 3 
     setxy random-xcor random-ycor   ;; the spawn point of the rocks will be a random location of the screen 
   ]
   
@@ -256,7 +257,8 @@ to go
      [ set pcolor white ] 
   ]               
  c-collision-script  
- a-collision-script     
+ a-collision-script
+ a-rock-collision-script     
    
  ask players[ if abs [pcolor] of patch-here = yellow 
  [ set heading (- heading) ]]
@@ -275,14 +277,14 @@ end
 
 to c-collision-script
   ;;let prey one-of rocks-here                    ;; grab a random rock
-  ;;if prey != nobody  
+  ;;if prey != nobody 
   ask rock
   [
     if abs [pcolor] of patch-here = white 
     [ 
       ask rock 
      [
-      hatch-meteor 5
+      hatch-meteor 1
     [    
       set color green
       set size 2.5  ;; easier to see
@@ -290,7 +292,7 @@ to c-collision-script
      set heading random (360)
       set label-color blue - 2
     ] 
-  die
+  
  ask bullet [die] 
         ]
     ]
@@ -307,6 +309,7 @@ to c-collision-script
      ;;]
    
 end
+  
 
 to c-draw-boundaries ;; draw the boundary that confines the objects to screen
      ask patches with [abs pxcor = max-pxcor ]
@@ -389,6 +392,10 @@ end
 
 to a-collision-script
   ask ships [if abs [pcolor] of patch-here = white [die]]
+end
+
+to a-rock-collision-script
+   ask rock [if abs [pcolor] of patch-here = white [die]] 
 end
     
 to a-bounce 
