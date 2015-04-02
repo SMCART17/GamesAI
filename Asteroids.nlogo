@@ -352,19 +352,13 @@ ask players
    ]
 ]
 end
-to c-move-up
-  ask players[ set heading 0 
-    fd 1]
-  
-end
-to c-move-down
-  ask players[ set heading 180 fd 1]
-end
-to c-move-left
-  ask players[ set heading 270 fd 1]
-end
-to c-move-right
-  ask players[ set heading 90 fd 1]
+
+to move-up
+  ask players
+  [ 
+    set heading 0 
+    fd 1
+  ]
 end
 ;;;; connors end ;;;;;
 
@@ -494,12 +488,12 @@ energy?
 -1000
 
 BUTTON
-104
+135
 395
-183
+214
 428
 move up
-c-move-up
+move-up
 NIL
 1
 T
@@ -511,12 +505,12 @@ NIL
 1
 
 BUTTON
-95
+134
 429
-190
+229
 462
 move down
-c-move-down
+move-down
 NIL
 1
 T
@@ -528,35 +522,18 @@ NIL
 1
 
 BUTTON
-10
+49
 429
-93
+132
 462
 move left
-c-move-left
+move-left
 NIL
 1
 T
 OBSERVER
 NIL
 A
-NIL
-NIL
-1
-
-BUTTON
-190
-429
-280
-462
-move right
-c-move-right
-NIL
-1
-T
-OBSERVER
-NIL
-D
 NIL
 NIL
 1
@@ -904,7 +881,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.2-RC3
+NetLogo 5.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
