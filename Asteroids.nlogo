@@ -352,10 +352,19 @@ ask players
    ]
 ]
 end
-to move-up
+to c-move-up
   ask players[ set heading 0 
     fd 1]
   
+end
+to c-move-down
+  ask players[ set heading 180 fd 1]
+end
+to c-move-left
+  ask players[ set heading 270 fd 1]
+end
+to c-move-right
+  ask players[ set heading 90 fd 1]
 end
 ;;;; connors end ;;;;;
 
@@ -485,12 +494,12 @@ energy?
 -1000
 
 BUTTON
-135
+104
 395
-214
+183
 428
 move up
-move-up
+c-move-up
 NIL
 1
 T
@@ -502,12 +511,12 @@ NIL
 1
 
 BUTTON
-134
+95
 429
-229
+190
 462
 move down
-move-down
+c-move-down
 NIL
 1
 T
@@ -519,18 +528,35 @@ NIL
 1
 
 BUTTON
-78
-435
-161
-468
+10
+429
+93
+462
 move left
-move-left
+c-move-left
 NIL
 1
 T
 OBSERVER
 NIL
 A
+NIL
+NIL
+1
+
+BUTTON
+190
+429
+280
+462
+move right
+c-move-right
+NIL
+1
+T
+OBSERVER
+NIL
+D
 NIL
 NIL
 1
