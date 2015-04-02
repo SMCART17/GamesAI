@@ -234,27 +234,30 @@ to go
   a-move-rocks            ;; the method for moving the rocks
        ask turtles[c-reflect]
   
-  ;;ask players
-  ;;[ 
-  ;;  ask patches in-cone 3 240 
-  ;;  [ set pcolor red ]  
-  ;;] 
+  ask players
+  [ 
+    ask patches in-cone 3 240 
+    [ set pcolor red ]  
+  ] 
         
- ;; ask ships
- ;; [ ask patches in-cone 2 360 
- ;;     [ set pcolor green ]     
- ;; ]
+  ask ships
+  [ ask patches in-cone 2 360 
+      [ set pcolor green ]     
+  ]
       
-  ;;ask rock
- ;; [ 
-  ;;  ask patches in-cone 3.5 360 
- ;;   [ set pcolor white ]
- ;; ] 
+  ask rock
+  [ 
+    ask patches in-cone 3.5 360 
+    [ set pcolor blue ]
+  ] 
    ask bullet
    [ 
      ask patches in-cone 1.5 360 
      [ set pcolor white ] 
-  ]               
+  ] 
+   ask meteor[ ask patches in-radius 2 [set pcolor pink]]
+   
+                 
  c-collision-script  
  a-collision-script     
    
@@ -275,10 +278,11 @@ end
 
 to c-collision-script
   ;;let prey one-of rocks-here                    ;; grab a random rock
-  ;;if prey != nobody  
+  ;;if prey != nobody
+  
   ask rock
   [
-    if abs [pcolor] of patch-here = white
+    if abs [pcolor] of patch-here  = white
   [     
     ask rock
     [
@@ -348,7 +352,7 @@ ask players
      set color pink
      set size 1
      set energy (50) 
-     lt 90 fd 1
+      fd 1
    ]
 ]
 end
