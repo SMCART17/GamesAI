@@ -3,7 +3,6 @@ breed [ bullets bullet ]
 breed [ ships ship ]
 breed [ rocks rock ]
 breed [ meteors meteor ]
-breed [ rocks2 rock2 ]
 
 players-own [ energy ]
 ships-own [ path current-path ]
@@ -13,7 +12,6 @@ globals
 [ 
   open 
   closed 
-  tool 
 ]
 
 patches-own
@@ -34,22 +32,6 @@ to setup
   ask patches [set pcolor black]
   
   set-default-shape meteors "asteroid"  
-
- ; set-default-shape ships "Invader_2"
- ; create-ships 12                          ;; create x ships at the start 
- ; [
- ;  ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
- ;  ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
- ;  ask one-of turtles [ set color yellow ] ;; set the colour of the ships to yellow
- ;  ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
-   
- ;  ask one-of turtles [ set shape "Invader_1"]
- ;  ask one-of turtles [ set shape "Invader_2"]  
- ;  ask one-of turtles [ set shape "Invader_3"] 
-            
- ;  set size 3                             ;; set the size of the ships
- ;  setxy random-xcor random-ycor           ;; set the location of the ship spawn point, at the top of the screen
- ; ]
    
   set-default-shape players "tank" ;;set the shape of the ships to a square  
   create-players 1                    ;; create 5 ship at the start 
@@ -60,50 +42,24 @@ to setup
    set heading 90 setxy 5 -27         ;; set the location of the player spawn point, at the top of the screen
   ]
   
- ; set-default-shape rocks "asteroid"   ;; set the shape of the rocks to a circle
- ; create-rocks 5                     ;; create x rocks at the start of the game 
- ; [                               
- ;   set color brown                 ;; the coloyur of the rocks to white   
- ;   set size 4                      ;; set the size of the rocks to 3 
- ;   setxy random-xcor random-ycor   ;; the spawn point of the rocks will be a random location of the screen 
- ; ]
-  
-          ;; Name of method that creates the "hunter" object that targets the player
-  reset-ticks
-  
+  reset-ticks  
 end
 
 to go
-  if ticks >= 1000 [stop] ;; stops the game game when the number of ticks reaches 1000
-  c-move-players          ;; the method name for the move player function 
-  c-color-refresh         ;; the method name for checking the boundry colours
-  a-move-ships            ;; the method name for moving the ships
-  a-move-rocks            ;; the method for moving the rocks
-       ask turtles[c-reflect]
-  
-  ;;ask players
-  ;;[ 
-  ;;  ask patches in-cone 3 240 
-  ;;  [ set pcolor red ]  
-  ;;] 
-        
- ;; ask ships
- ;; [ ask patches in-cone 2 360 
- ;;     [ set pcolor green ]     
- ;; ]
-      
-  ;;ask rock
- ;; [ 
-  ;;  ask patches in-cone 3.5 360 
- ;;   [ set pcolor white ]
- ;; ] 
-   ask bullets
+ if ticks >= 1000 [stop] ;; stops the game game when the number of ticks reaches 1000
+ c-move-players          ;; the method name for the move player function 
+ c-color-refresh         ;; the method name for checking the boundry colours
+ a-move-ships            ;; the method name for moving the ships
+ a-move-rocks            ;; the method for moving the rocks
+ ask turtles[c-reflect]
+ 
+ ask bullets
+ [ 
+   ask patches in-cone 1 360 
    [ 
-     ask patches in-cone 1 360 
-     [ 
-       set pcolor white 
-     ] 
-  ]               
+     set pcolor white 
+   ] 
+ ]               
  c-collision-script  
  a-collision-script     
    
@@ -128,18 +84,21 @@ end
 ;;;; Search start ;;;;
   
 to s-create-hunter-and-target
-  ask one-of ships with [color = red]
-  [ 
-    set label "hunter"
+  if any? ships
+  [
+    ask ship 1
+    [ 
+      set label "hunter"
+    ]
   ]
 end
 
 to s-find-target
   reset-ticks
+    
   ask one-of ships with [label = "hunter"] 
   [    
     set path s-find-a-path one-of ships with [label = "hunter"] one-of players 
-    ;;set optimal-path path
     set current-path path
   ]
   s-move
@@ -406,77 +365,90 @@ end
 ;;;; andrews end ;;;;
 
 ;;;; Ross Start ;;;;
-to r-draw  
-  if tool = "Invader"
-  [ r-spawn-invader ]
-  
-  if tool = "Asteroid"
-  [ r-spawn-asteroid ]
-  
-  if tool = "Erase"
-  [ r-erase ]
-end
-
-to r-erase
-    ask patch (round mouse-xcor) (round mouse-ycor)
-    [
-      if mouse-down?
-      [
-        set pcolor black
-        
-        ask ships-here
-        [ die ]
-        
-        ask rocks-here
-        [ die ]
-        
-        ask players-here
-        [ setxy 0 -27 ]
-      ]
-    ]
-end
-
-to r-spawn-invader
-  every(1)
-  [
-    if mouse-down?
-    [
-      hatch-ships 1                          ;; create x ships at the start 
-      [
-        if tool = "Invader"
-        [
-          ask one-of turtles [ set color blue ]   ;; set the colour of the ships to blue
-          ask one-of turtles [ set color green ]  ;; set the colour of the ships to green
-          ask one-of turtles [ set color red ]    ;; set the colour of the ships to red
-          
-          ask one-of turtles [ set shape "Invader_1"]
-          ask one-of turtles [ set shape "Invader_2"]  
-          ask one-of turtles [ set shape "Invader_3"] 
-          
-          set size 3                             ;; set the size of the ships
-          setxy (round mouse-xcor) (round mouse-ycor)           ;; set the location of the ship spawn point, at the top of the screen
-        ]
-      ]
-    ]
-]
-end
-
-
-to r-spawn-asteroid
+to r-draw-invader  
   if mouse-down?
   [
-    hatch-rocks 1
+    ask patch (round mouse-xcor) (round mouse-ycor)
     [
-      if tool = "Asteroid"
-      [
-        set color brown 
-        set shape "asteroid"
-        setxy (round mouse-xcor) (round mouse-ycor)
-      ]
+      set pcolor red
     ]
   ]
 end
 
+to r-draw-asteroid
+  if mouse-down?
+  [
+    ask patch (round mouse-xcor) (round mouse-ycor)
+    [
+      set pcolor brown
+    ]
+  ]
+end
+
+to r-erase
+  ask patch (round mouse-xcor) (round mouse-ycor)
+  [
+    if mouse-down?
+    [
+      set pcolor black
+      
+      ask ships-here
+      [ die ]
+      
+      ask rocks-here
+      [ die ]
+        
+      ask players-here
+      [ setxy 0 -27 ]
+    ]
+  ]
+end
+
+to r-setup-turtles
+ ask patches with [pcolor = red]
+ [
+   sprout-ships 1
+   [
+     set size 4     
+     set color one-of [ red green blue ]     
+     set shape one-of [ "Invader_1" "Invader_2" "Invader_3" ] 
+   ]
+   set pcolor black
+ ]
+ 
+ ask patches with [pcolor = brown]
+ [
+   sprout-rocks 1
+   [
+     set size 4     
+     set color brown
+     set shape "asteroid"
+   ]   
+   set pcolor black
+ ]
+end
+
+to r-random-spawn
+  every (3)
+  [
+    sprout-ships 1
+    [
+      set size 4
+      set color one-of [ red green blue ]
+      set shape one-of [ "Invader_1" "Invader_2" "Invader_3"]
+    ]
+  ]
+  
+  every (5)
+  [
+    sprout-rocks 1
+    [
+      set size one-of [3 4 5 6 7]
+      set color brown
+      set shape "asteroid"
+    ]
+  ]   
+end
 ;;;; Ross End   ;;;;
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -507,10 +479,10 @@ ticks
 100.0
 
 BUTTON
-510
-665
-574
-698
+18
+144
+82
+177
 NIL
 Setup
 NIL
@@ -524,10 +496,10 @@ NIL
 1
 
 BUTTON
-660
-665
-723
-698
+175
+180
+238
+213
 Go
 go\ns-find-target\n
 T
@@ -541,10 +513,10 @@ NIL
 0
 
 MONITOR
-641
-711
-724
-756
+18
+214
+101
+259
 NIL
 count turtles
 3
@@ -552,10 +524,10 @@ count turtles
 11
 
 BUTTON
-584
-665
-650
-698
+175
+145
+241
+178
 Bullet
 c-sprog-spawns
 NIL
@@ -569,10 +541,10 @@ NIL
 1
 
 SWITCH
-510
-722
-613
-755
+18
+179
+121
+212
 energy?
 energy?
 0
@@ -580,83 +552,89 @@ energy?
 -1000
 
 BUTTON
-155
-144
-272
-177
-Invader
-set tool \"Invader 1\"
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-17
-98
-84
-131
-Eraser
-set tool \"Erase\"
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-17
-144
-123
-177
-Place Objects
-r-draw
-T
-1
-T
-TURTLE
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-194
-98
-272
-131
-Asteroid
-set tool \"Asteroid\"
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-MONITOR
 18
-12
-104
-61
-Tool In Use
-tool
-0
+45
+156
+78
+Set Invader Spawn
+r-draw-invader
+T
 1
-12
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+175
+45
+242
+78
+Eraser
+r-erase
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+18
+10
+158
+43
+Set Asteroid Spawn
+r-draw-asteroid
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+175
+10
+271
+43
+Wipe Scene
+clear-all
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+18
+80
+130
+113
+Spawn Turtles
+r-setup-turtles
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
